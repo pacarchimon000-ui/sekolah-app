@@ -111,13 +111,16 @@ class ReportController extends Controller
         if ($request->filled('search')) {
             $search = trim($request->string('search'));
 
-            $query->where(function ($q) use ($search) {
-                $q->where('ticket_number', 'like', "%{$search}%")
-                    ->orWhere('type', 'like', "%{$search}%")
-                    ->orWhere('category', 'like', "%{$search}%")
-                    ->orWhere('subject', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
+            // Require minimum 2 characters to prevent whitespace-only searches
+            if (strlen($search) >= 2) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('ticket_number', 'like', "%{$search}%")
+                        ->orWhere('type', 'like', "%{$search}%")
+                        ->orWhere('category', 'like', "%{$search}%")
+                        ->orWhere('subject', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
         }
 
         if ($request->filled('status')) {
@@ -142,14 +145,17 @@ class ReportController extends Controller
 
         if ($request->filled('search')) {
             $search = trim($request->string('search'));
-
-            $query->where(function ($q) use ($search) {
-                $q->where('ticket_number', 'like', "%{$search}%")
-                    ->orWhere('type', 'like', "%{$search}%")
-                    ->orWhere('category', 'like', "%{$search}%")
-                    ->orWhere('subject', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
+            
+            // Require minimum 2 characters to prevent whitespace-only searches
+            if (strlen($search) >= 2) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('ticket_number', 'like', "%{$search}%")
+                        ->orWhere('type', 'like', "%{$search}%")
+                        ->orWhere('category', 'like', "%{$search}%")
+                        ->orWhere('subject', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
         }
 
         if ($request->filled('status')) {
@@ -165,11 +171,13 @@ class ReportController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
+        $baseQuery = Report::where('user_id', Auth::id());
+
         $stats = [
-            'total' => $reports->count(),
-            'today' => $reports->filter(fn ($report) => $report->created_at->isToday())->count(),
-            'resolved' => $reports->where('status', 'Selesai')->count(),
-            'open' => $reports->whereNotIn('status', ['Selesai'])->count(),
+            'total' => (clone $baseQuery)->count(),
+            'today' => (clone $baseQuery)->whereDate('created_at', today())->count(),
+            'resolved' => (clone $baseQuery)->where('status', 'Selesai')->count(),
+            'open' => (clone $baseQuery)->whereNotIn('status', ['Selesai'])->count(),
         ];
 
         return view('student-dashboard', [
@@ -231,6 +239,10 @@ class ReportController extends Controller
 
     public function updateStatus(Request $request, Report $report): RedirectResponse
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Akses ditolak. Hanya admin yang dapat mengubah status laporan.');
+        }
+
         $request->validate([
             'status' => ['required', 'in:Diterima,Diproses,Selesai'],
         ]);
@@ -239,8 +251,12 @@ class ReportController extends Controller
             'status' => $request->status,
         ]);
 
-        if ($report->user && $report->user->email) {
-            Mail::to($report->user->email)->send(new ReportStatusUpdatedMail($report->fresh()));
+        if ($report->user?->email && filter_var($report->user->email, FILTER_VALIDATE_EMAIL)) {
+            try {
+                Mail::to($report->user->email)->send(new ReportStatusUpdatedMail($report->fresh()));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send status update mail for report ' . $report->ticket_number . ': ' . $e->getMessage());
+            }
         }
 
         return redirect()->route('dashboard')->with('success', 'Status laporan berhasil diperbarui.');
@@ -270,17 +286,35 @@ class ReportController extends Controller
 
         $attachmentPath = $request->file('attachment')?->store('report-attachments', 'public');
 
+        // Generate unique ticket number with retry logic
+        $ticketNumber = null;
+        for ($i = 0; $i < 10; $i++) {
+            $candidate = 'ASP-' . now()->format('ymd') . '-' . Str::upper(Str::random(5));
+            if (!Report::where('ticket_number', $candidate)->exists()) {
+                $ticketNumber = $candidate;
+                break;
+            }
+        }
+
+        if (!$ticketNumber) {
+            throw new \Exception('Failed to generate unique ticket number');
+        }
+
         $report = Report::create([
             ...$validated,
-            'ticket_number' => 'ASP-' . now()->format('ymd') . '-' . Str::upper(Str::random(5)),
+            'ticket_number' => $ticketNumber,
             'is_anonymous' => $request->boolean('is_anonymous'),
             'status' => 'Diterima',
             'attachment_path' => $attachmentPath,
             'user_id' => Auth::check() ? Auth::id() : null,
         ]);
 
-        if ($report->user && $report->user->email) {
-            Mail::to($report->user->email)->send(new ReportSubmittedMail($report->fresh()));
+        if ($report->user?->email && filter_var($report->user->email, FILTER_VALIDATE_EMAIL)) {
+            try {
+                Mail::to($report->user->email)->send(new ReportSubmittedMail($report->fresh()));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send submission mail for report ' . $report->ticket_number . ': ' . $e->getMessage());
+            }
         }
 
         $redirectRoute = Auth::check() ? 'student.dashboard' : 'portal';

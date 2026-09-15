@@ -80,7 +80,8 @@ class AuthController extends Controller
 
         $query = User::where('role', 'student');
 
-        if ($search !== '') {
+        // Require minimum 2 characters for search to prevent performance issues
+        if (!empty($search) && strlen($search) >= 2) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('phone_number', 'like', "%{$search}%")

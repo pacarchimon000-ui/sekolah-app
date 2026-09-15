@@ -250,7 +250,7 @@
         <div class="value">{{ $report->description }}</div>
     </div>
 
-    @if ($report->attachment_path)
+    @if ($report->attachment_path && !str_contains($report->attachment_path, '..'))
         <a href="{{ asset('storage/' . $report->attachment_path) }}" class="attachment" target="_blank" rel="noopener noreferrer">
             Lihat lampiran
         </a>
