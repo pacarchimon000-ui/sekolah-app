@@ -29,7 +29,8 @@ class ReportController extends Controller
         $query = $this->buildReportQuery($request);
         $reports = $query->paginate(10)->appends($request->query());
 
-        $statsQuery = $query->withoutEagerLoads();
+        // Build a fresh query for stats (without eager loading for efficiency)
+        $statsQuery = $this->buildBaseReportQuery($request);
 
         $stats = [
             'total' => $statsQuery->count(),
@@ -38,7 +39,9 @@ class ReportController extends Controller
             'resolved' => (clone $statsQuery)->where('status', 'Selesai')->count(),
         ];
 
+        // Build a fresh aggregate query without orderBy/limit to avoid ONLY_FULL_GROUP_BY issues
         $summaryQuery = (clone $statsQuery)
+            ->reorder()
             ->selectRaw("SUM(CASE WHEN type = 'aspirasi' THEN 1 ELSE 0 END) as aspirasi")
             ->selectRaw("SUM(CASE WHEN type = 'pengaduan' THEN 1 ELSE 0 END) as pengaduan")
             ->selectRaw("SUM(CASE WHEN type = 'lost_found' THEN 1 ELSE 0 END) as lost_found")
@@ -131,6 +134,29 @@ class ReportController extends Controller
         }
 
         return $query->orderBy($sort, $direction);
+    }
+
+    private function buildBaseReportQuery(Request $request)
+    {
+        $query = Report::query();
+
+        if ($request->filled('search')) {
+            $search = trim($request->string('search'));
+
+            $query->where(function ($q) use ($search) {
+                $q->where('ticket_number', 'like', "%{$search}%")
+                    ->orWhere('type', 'like', "%{$search}%")
+                    ->orWhere('category', 'like', "%{$search}%")
+                    ->orWhere('subject', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        return $query;
     }
 
     public function studentDashboard()

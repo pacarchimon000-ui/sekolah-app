@@ -657,7 +657,7 @@
 <div class="dashboard-shell">
     <nav class="topbar">
         <a href="{{ route('portal') }}" class="brand">
-            <span class="brand-mark">S</span>
+            <img src="{{ asset('logo-sekolah-transparent.png') }}" alt="Logo SMK Wahidin" style="width: 40px; height: 40px; object-fit: contain;">
             <span>SMK Wahidin Kota Cirebon</span>
         </a>
 
@@ -665,6 +665,10 @@
             <a href="{{ route('profile') }}" class="ghost-btn">Profil</a>
             <a href="{{ route('admin.students') }}" class="ghost-btn">Kelola siswa</a>
             <a href="#reports" class="primary-btn">Kelola laporan</a>
+            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                @csrf
+                <button type="submit" class="ghost-btn" style="border-color: rgba(255, 138, 128, 0.32); color: #ffb0a9;">Logout</button>
+            </form>
         </div>
     </nav>
 
