@@ -9,23 +9,23 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AuthController::class, 'showLoginChoice'])->name('portal');
 Route::get('/login', [AuthController::class, 'showLoginChoice'])->name('login');
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', 'admin')->group(function () {
     Route::get('/dashboard', function (Request $request) {
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat membuka dashboard.');
-        }
-
         return app(ReportController::class)->dashboard($request);
     })->name('dashboard');
 
     Route::get('/dashboard/export', function (Request $request) {
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat mengekspor laporan.');
-        }
-
         return app(ReportController::class)->export($request);
     })->name('dashboard.export');
 
+    Route::get('/admin/siswa', [AuthController::class, 'showStudentManagement'])->name('admin.students');
+    Route::get('/admin/siswa/{student}', [AuthController::class, 'showStudentDetail'])->name('admin.students.detail');
+    Route::post('/admin/siswa', [AuthController::class, 'storeStudentManagement'])->name('admin.students.store');
+    Route::put('/admin/siswa/{student}', [AuthController::class, 'updateStudentManagement'])->name('admin.students.update');
+    Route::delete('/admin/siswa/{student}', [AuthController::class, 'destroyStudentManagement'])->name('admin.students.destroy');
+});
+
+Route::middleware('auth')->group(function () {
     Route::get('/dashboard/siswa', function () {
         if (Auth::user()->role !== 'student') {
             abort(403, 'Akses ditolak. Hanya siswa yang dapat membuka dashboard siswa.');
@@ -33,12 +33,6 @@ Route::middleware('auth')->group(function () {
 
         return app(ReportController::class)->studentDashboard();
     })->name('student.dashboard');
-
-    Route::get('/admin/siswa', [AuthController::class, 'showStudentManagement'])->name('admin.students');
-    Route::get('/admin/siswa/{student}', [AuthController::class, 'showStudentDetail'])->name('admin.students.detail');
-    Route::post('/admin/siswa', [AuthController::class, 'storeStudentManagement'])->name('admin.students.store');
-    Route::put('/admin/siswa/{student}', [AuthController::class, 'updateStudentManagement'])->name('admin.students.update');
-    Route::delete('/admin/siswa/{student}', [AuthController::class, 'destroyStudentManagement'])->name('admin.students.destroy');
 
     Route::get('/profile', [AuthController::class, 'showProfile'])->name('profile');
     Route::put('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
@@ -57,11 +51,17 @@ Route::get('/register/admin', [AuthController::class, 'showAdminRegister'])->nam
 Route::post('/register/admin', [AuthController::class, 'registerAdmin'])->name('admin.register.submit');
 
 Route::get('/login/siswa', [AuthController::class, 'showStudentLogin'])->name('student.login');
-Route::post('/login/siswa', [AuthController::class, 'loginStudent'])->name('student.login.submit');
+Route::post('/login/siswa', [AuthController::class, 'loginStudent'])
+    ->middleware('throttle:5,15')
+    ->name('student.login.submit');
 
 Route::get('/login/admin', [AuthController::class, 'showAdminLogin'])->name('admin.login');
-Route::post('/login/admin', [AuthController::class, 'loginAdmin'])->name('admin.login.submit');
+Route::post('/login/admin', [AuthController::class, 'loginAdmin'])
+    ->middleware('throttle:5,15')
+    ->name('admin.login.submit');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::post('/laporan', [ReportController::class, 'store'])->name('reports.store');
+Route::post('/laporan', [ReportController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('reports.store');

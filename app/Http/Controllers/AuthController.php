@@ -64,10 +64,6 @@ class AuthController extends Controller
 
     public function showStudentManagement(Request $request)
     {
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat mengelola data siswa.');
-        }
-
         $search = trim((string) $request->input('search', ''));
         $sort = $request->input('sort', 'created_at');
         $direction = strtolower($request->input('direction', 'desc')) === 'asc' ? 'asc' : 'desc';
@@ -80,7 +76,6 @@ class AuthController extends Controller
 
         $query = User::where('role', 'student');
 
-        // Require minimum 2 characters for search to prevent performance issues
         if (!empty($search) && strlen($search) >= 2) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -101,10 +96,6 @@ class AuthController extends Controller
 
     public function storeStudentManagement(Request $request)
     {
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat menambah data siswa.');
-        }
-
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'phone_number' => ['required', 'string', 'max:20', 'unique:users,phone_number'],
@@ -124,10 +115,6 @@ class AuthController extends Controller
 
     public function updateStudentManagement(Request $request, User $student)
     {
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat mengelola data siswa.');
-        }
-
         if ($student->role !== 'student') {
             abort(403, 'Akses ditolak. Hanya data siswa yang bisa diperbarui dari halaman ini.');
         }
@@ -152,10 +139,6 @@ class AuthController extends Controller
 
     public function destroyStudentManagement(User $student)
     {
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat menghapus data siswa.');
-        }
-
         if ($student->role !== 'student') {
             abort(403, 'Akses ditolak. Hanya data siswa yang bisa dihapus dari halaman ini.');
         }
@@ -167,10 +150,6 @@ class AuthController extends Controller
 
     public function showStudentDetail(User $student)
     {
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat melihat detail siswa.');
-        }
-
         if ($student->role !== 'student') {
             abort(403, 'Akses ditolak. Hanya data siswa yang bisa dilihat dari halaman ini.');
         }
@@ -250,6 +229,8 @@ class AuthController extends Controller
             ]);
         }
 
+        $request->session()->regenerate();
+
         return redirect()->route('student.dashboard');
     }
 
@@ -280,6 +261,8 @@ class AuthController extends Controller
                 'phone_number' => 'Akun ini tidak memiliki akses admin.',
             ]);
         }
+
+        $request->session()->regenerate();
 
         return redirect()->route('dashboard');
     }
