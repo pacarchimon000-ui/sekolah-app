@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Suara Sekolah - Presentasi Proyek</title>
+    <style>
+        :root {
+            --bg-1: #0b1413;
+            --bg-2: #11231d;
+            --bg-3: #1d332e;
+            --panel: rgba(19, 37, 31, 0.88);
+            --panel-2: rgba(13, 23, 21, 0.95);
+            --line: rgba(204, 216, 210, 0.18);
+            --text: #edf5ef;
+            --muted: #aab8b3;
+            --green: #4ec28d;
+            --green-2: #7dd3a7;
+            --green-3: #1d6a57;
+            --accent: #dff9ea;
+            --shadow: 0 30px 80px rgba(0, 0, 0, 0.36);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 35%, var(--bg-3) 100%);
+            color: var(--text);
+            scroll-behavior: smooth;
+        }
+
+        body {
+            padding: 28px;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            background: rgba(11, 20, 19, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 14px 18px;
+            margin-bottom: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-3) 100%);
+            color: #fff;
+            font-weight: 800;
+        }
+
+        .download-btn {
+            appearance: none;
+            border: none;
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-3) 100%);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            box-shadow: 0 12px 28px rgba(38, 145, 103, 0.38);
+            cursor: pointer;
+        }
+
+        .presentation {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .slide {
+            background: linear-gradient(180deg, rgba(19, 37, 31, 0.92), rgba(13, 23, 21, 0.96));
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            padding: 52px 48px;
+            min-height: 760px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--green) 0%, rgba(78,194,141,0.1) 100%);
+        }
+
+        .eyebrow {
+            margin: 0 0 12px;
+            font-size: 0.76rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--green);
+            font-weight: 800;
+        }
+
+        h1 {
+            font-size: clamp(2.3rem, 3vw, 4rem);
+            line-height: 1.02;
+            letter-spacing: -0.07em;
+            margin: 0 0 18px;
+        }
+
+        h2 {
+            font-size: clamp(1.8rem, 2.2vw, 3rem);
+            line-height: 1.1;
+            letter-spacing: -0.06em;
+            margin: 0 0 16px;
+        }
+
+        p, li {
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 22px;
+        }
+
+        .subtitle {
+            max-width: 900px;
+            font-size: 1.1rem;
+            color: var(--muted);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            gap: 28px;
+            align-items: center;
+            margin-top: 28px;
+        }
+
+        .hero-box {
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            background: rgba(255,255,255,0.02);
+            padding: 26px;
+        }
+
+        .hero-box h3 {
+            margin: 0 0 12px;
+            font-size: 1.15rem;
+            color: var(--accent);
+        }
+
+        .stats-grid, .feature-grid, .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+            margin-top: 22px;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            background: rgba(255,255,255,0.02);
+            padding: 22px;
+            min-height: 150px;
+        }
+
+        .card h3 {
+            margin: 0 0 12px;
+            color: var(--green);
+            font-size: 0.74rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .big-number {
+            font-size: clamp(2rem, 2.3vw, 2.8rem);
+            font-weight: 800;
+            letter-spacing: -0.06em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .feature-grid .card {
+            min-height: 180px;
+        }
+
+        .feature-grid h3 {
+            margin: 0 0 6px;
+            color: var(--text);
+            font-size: 1.2rem;
+        }
+
+        .tech-grid .card {
+            min-height: 120px;
+        }
+
+        .table-wrap {
+            margin-top: 24px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.02);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--line);
+            padding: 14px 16px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            color: var(--green);
+            background: rgba(78,194,141,0.05);
+            font-size: 0.78rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        td {
+            color: var(--muted);
+            font-size: 0.96rem;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 8px 12px;
+            border: 1px solid rgba(78,194,141,0.34);
+            background: rgba(78,194,141,0.12);
+            color: #d9ffe8;
+            font-weight: 700;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .end-box {
+            margin-top: 30px;
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            padding: 26px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid, .feature-grid, .tech-grid, .two-col, .hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .slide {
+                padding: 34px 22px;
+                min-height: auto;
+            }
+
+            body {
+                padding: 16px;
+            }
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+            .topbar {
+                display: none;
+            }
+            .slide {
+                box-shadow: none;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+                margin-bottom: 0;
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="brand">
+            <div class="brand-mark">S</div>
+            <div>Suara Sekolah</div>
+        </div>
+        <button class="download-btn" onclick="window.print()">Download / Print PDF</button>
+    </div>
+
+    <div class="presentation">
+        <section class="slide">
+            <p class="eyebrow">Presentasi Proyek</p>
+            <h1>Suara Sekolah</h1>
+            <p class="subtitle">
+                Sistem portal laporan dan manajemen siswa berbasis web untuk memudahkan siswa mengirim laporan,
+                serta membantu admin memantau, mengelola, dan menindaklanjuti laporan secara cepat dan terstruktur.
+            </p>
+
+            <div class="hero-grid">
+                <div class="hero-box">
+                    <h3>Ringkasan singkat</h3>
+                    <p>
+                        Proyek ini dibangun dengan Laravel dan MySQL untuk menyediakan portal akses siswa dan admin,
+                        dashboard statistik, manajemen siswa, serta fitur export laporan. Aplikasi ini juga dirancang
+                        agar dapat diakses dari perangkat mobile melalui jaringan lokal.
+                    </p>
+                </div>
+                <div class="hero-box">
+                    <h3>Focus utama</h3>
+                    <p>
+                        <span class="pill">Login</span>
+                        <span class="pill">Dashboard</span>
+                        <span class="pill">Laporan</span>
+                        <span class="pill">Pengelolaan</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">2. Latar Belakang</p>
+            <h2>Mengapa proyek ini dibuat?</h2>
+            <p>
+                Sekolah membutuhkan media yang cepat, rapi, dan mudah diakses untuk menerima laporan dari siswa.
+                Proses pelaporan yang masih dilakukan secara manual sering kali kurang terstruktur, sulit dilacak, dan
+                tidak efisien untuk dipantau oleh admin.
+            </p>
+            <div class="two-col">
+                <div class="card">
+                    <h3>Masalah awal</h3>
+                    <ul>
+                        <li>Pelaporan masih bersifat manual dan tidak terorganisir.</li>
+                        <li>Admin kesulitan memantau seluruh laporan dengan cepat.</li>
+                        <li>Siswa butuh portal mudah diakses dari ponsel.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Solusi yang dibuat</h3>
+                    <ul>
+                        <li>Menyediakan portal laporan digital berbasis web.</li>
+                        <li>Memberikan dashboard untuk admin agar data lebih mudah dipantau.</li>
+                        <li>Menggunakan login berbasis nomor handphone untuk kecepatan akses.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">3. Tujuan Proyek</p>
+            <h2>Apa yang ingin dicapai?</h2>
+            <ul>
+                <li>Memudahkan siswa mengirim aspirasi, pengaduan, atau laporan barang hilang.</li>
+                <li>Memudahkan admin dalam memantau status laporan secara real-time.</li>
+                <li>Menyediakan dashboard statistik agar evaluasi lebih cepat dan akurat.</li>
+                <li>Membuat sistem login yang sederhana dengan nomor handphone dan password.</li>
+                <li>Memberikan manajemen data siswa yang lebih rapi dan mudah dikelola.</li>
+            </ul>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">4. Fitur Utama</p>
+            <h2>Fitur yang sudah tersedia</h2>
+            <div class="feature-grid">
+                <div class="card">
+                    <h3>Login & Registrasi</h3>
+                    <p>Portal login terpisah untuk siswa dan admin, serta registrasi menggunakan nomor handphone tanpa email.</p>
+                </div>
+                <div class="card">
+                    <h3>Dashboard Admin</h3>
+                    <p>Menampilkan statistik laporan, ringkasan jenis laporan, pencarian, dan pengaturan status.</p>
+                </div>
+                <div class="card">
+                    <h3>Dashboard Siswa</h3>
+                    <p>Siswa dapat melihat riwayat laporan, detail laporan, dan mengedit laporan milik sendiri.</p>
+                </div>
+                <div class="card">
+                    <h3>Manajemen Siswa</h3>
+                    <p>Admin dapat menambah, mengedit, mencari, mengurutkan, dan menghapus data siswa.</p>
+                </div>
+                <div class="card">
+                    <h3>Export Data</h3>
+                    <p>Data laporan dapat diekspor ke format CSV sebagai arsip dan laporan eksternal.</p>
+                </div>
+                <div class="card">
+                    <h3>Akses Mobile</h3>
+                    <p>Project dapat diakses melalui alamat IP lokal dari perangkat lain di jaringan yang sama.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">5. Alur Sistem</p>
+            <h2>Bagaimana aplikasi bekerja?</h2>
+            <div class="two-col">
+                <div class="card">
+                    <h3>Alur siswa</h3>
+                    <ul>
+                        <li>Masuk ke portal login</li>
+                        <li>Login dengan nomor handphone dan password</li>
+                        <li>Membuat laporan</li>
+                        <li>Melihat status dan riwayat laporan</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Alur admin</h3>
+                    <ul>
+                        <li>Login ke portal admin</li>
+                        <li>Melihat dashboard dan statistik</li>
+                        <li>Mengubah status laporan</li>
+                        <li>Kelola siswa dan export data</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">6. Struktur Teknologi</p>
+            <h2>Teknologi yang digunakan</h2>
+            <div class="tech-grid">
+                <div class="card">
+                    <h3>Backend</h3>
+                    <p>Laravel 12 untuk routing, controller, autentikasi, dan logika aplikasi.</p>
+                </div>
+                <div class="card">
+                    <h3>Database</h3>
+                    <p>MySQL untuk menyimpan data siswa, laporan, sesi login, dan riwayat aktivitas.</p>
+                </div>
+                <div class="card">
+                    <h3>Frontend</h3>
+                    <p>Blade + CSS custom untuk tampilan modern yang ramah digunakan di desktop maupun mobile.</p>
+                </div>
+                <div class="card">
+                    <h3>Eksekusi</h3>
+                    <p>PHP Artisan, migrasi database, dan akses lokal melalui IP jaringan.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">7. Struktur Folder Utama</p>
+            <h2>Komponen utama aplikasi</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bagian</th>
+                            <th>Fungsi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>routes/web.php</td>
+                            <td>Mengatur semua route halaman dan aksi aplikasi.</td>
+                        </tr>
+                        <tr>
+                            <td>app/Http/Controllers/AuthController.php</td>
+                            <td>Menangani login, register, profil, dan manajemen siswa.</td>
+                        </tr>
+                        <tr>
+                            <td>app/Http/Controllers/ReportController.php</td>
+                            <td>Menangani laporan, dashboard, dan update status.</td>
+                        </tr>
+                        <tr>
+                            <td>app/Models/User.php</td>
+                            <td>Model pengguna dan role-based akses.</td>
+                        </tr>
+                        <tr>
+                            <td>app/Models/Report.php</td>
+                            <td>Model laporan dan label jenis laporan.</td>
+                        </tr>
+                        <tr>
+                            <td>resources/views</td>
+                            <td>Semua tampilan halaman aplikasi.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">8. Role dan Hak Akses</p>
+            <h2>Siapa yang bisa akses apa?</h2>
+            <div class="two-col">
+                <div class="card">
+                    <h3>Admin</h3>
+                    <ul>
+                        <li>Melihat dashboard utama</li>
+                        <li>Mengelola semua laporan</li>
+                        <li>Mengubah status laporan</li>
+                        <li>Mengelola data siswa</li>
+                        <li>Mengekspor laporan</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Siswa</h3>
+                    <ul>
+                        <li>Login portal siswa</li>
+                        <li>Melihat laporan milik sendiri</li>
+                        <li>Melihat detail dan edit laporan</li>
+                        <li>Mengetahui status laporan</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">9. Dashboard Admin</p>
+            <h2>Apa yang dilihat admin?</h2>
+            <ul>
+                <li>Total jumlah laporan masuk</li>
+                <li>Jumlah laporan hari ini</li>
+                <li>Jumlah laporan anonim dan selesai</li>
+                <li>Ringkasan per jenis laporan (aspirasi, pengaduan, barang hilang)</li>
+                <li>Tabel laporan dengan filter dan sorting</li>
+                <li>Fitur update status langsung dari daftar laporan</li>
+            </ul>
+            <div class="end-box">
+                <p>
+                    Dashboard ini dirancang agar admin dapat mengambil keputusan dan memantau kondisi laporan dengan cepat,
+                    terutama saat dipakai di perangkat mobile.
+                </p>
+            </div>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">10. Manajemen Siswa</p>
+            <h2>Bagaimana data siswa dikelola?</h2>
+            <ul>
+                <li>Admin dapat menambah siswa baru</li>
+                <li>Admin dapat mengubah data siswa</li>
+                <li>Admin dapat menghapus siswa yang tidak valid</li>
+                <li>Admin dapat mencari data siswa berdasarkan nama atau nomor handphone</li>
+                <li>Admin dapat melihat detail siswa beserta riwayat laporan</li>
+            </ul>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">11. Keunggulan Proyek</p>
+            <h2>Apa kelebihan dari aplikasi ini?</h2>
+            <div class="stats-grid">
+                <div class="card">
+                    <h3>Modern</h3>
+                    <div class="big-number">01</div>
+                    <p>Tampilan lebih rapi, bersih, dan mudah digunakan.</p>
+                </div>
+                <div class="card">
+                    <h3>Praktis</h3>
+                    <div class="big-number">02</div>
+                    <p>Login cepat dengan nomor handphone dan password.</p>
+                </div>
+                <div class="card">
+                    <h3>Fungsional</h3>
+                    <div class="big-number">03</div>
+                    <p>Fitur laporan, admin, dan data siswa tersusun dalam satu sistem.</p>
+                </div>
+                <div class="card">
+                    <h3>Mobile-ready</h3>
+                    <div class="big-number">04</div>
+                    <p>Dapat diakses dari HP melalui jaringan lokal sekolah.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">12. Tantangan & Solusi</p>
+            <h2>Tantangan yang dihadapi dan cara mengatasinya</h2>
+            <div class="two-col">
+                <div class="card">
+                    <h3>Tantangan</h3>
+                    <ul>
+                        <li>Login harus memakai nomor handphone</li>
+                        <li>Akses dari HP perlu URL lokal</li>
+                        <li>Dashboard harus cepat saat dibuka di ponsel</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Solusi</h3>
+                    <ul>
+                        <li>Menggunakan phone_number sebagai credential utama</li>
+                        <li>Mengatur APP_URL sesuai IP perangkat</li>
+                        <li>Mengoptimasi query dan asset halaman agar lebih ringan</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">13. Hasil Yang Sudah Dicapai</p>
+            <h2>Progress proyek saat ini</h2>
+            <ul>
+                <li>Portal login siswa dan admin sudah aktif dan berfungsi.</li>
+                <li>Dashboard admin dan siswa sudah tersedia.</li>
+                <li>Manajemen siswa sudah dapat dilakukan.</li>
+                <li>Detail laporan, edit laporan, dan export laporan sudah berjalan.</li>
+                <li>Proyek sudah dapat diakses dari perangkat lain pada jaringan lokal.</li>
+            </ul>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">14. Rencana Pengembangan</p>
+            <h2>Langkah selanjutnya</h2>
+            <ul>
+                <li>Integrasi notifikasi email.</li>
+                <li>Integrasi WhatsApp otomatis</li>
+                <li>Peningkatan keamanan dan validasi data</li>
+                <li>Eksport laporan dalam format PDF</li>
+                <li>Backup data otomatis dan monitoring lebih lengkap</li>
+            </ul>
+        </section>
+
+        <section class="slide">
+            <p class="eyebrow">15. Penutup</p>
+            <h2>Kesimpulan</h2>
+            <p>
+                Proyek Suara Sekolah merupakan solusi digital yang mampu membantu sekolah dalam mengelola laporan,
+                memantau status, serta menjaga komunikasi antara siswa dan admin secara lebih cepat, terstruktur,
+                dan mudah diakses. Aplikasi ini sudah menjadi platform fungsional yang siap untuk terus dikembangkan
+                sesuai kebutuhan sekolah.
+            </p>
+            <div class="end-box">
+                <p style="font-size:1.1rem; color:var(--text); margin:0;">
+                    “Dengan sistem ini, proses pelaporan menjadi lebih cepat, lebih rapi, dan lebih mudah diakses.”
+                </p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
