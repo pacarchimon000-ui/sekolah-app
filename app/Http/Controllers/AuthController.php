@@ -249,7 +249,7 @@ class AuthController extends Controller
             ]);
         }
 
-        return redirect()->intended(route('student.dashboard'));
+        return redirect()->route('student.dashboard');
     }
 
     public function loginAdmin(Request $request)
@@ -280,7 +280,7 @@ class AuthController extends Controller
             ]);
         }
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->route('dashboard');
     }
 
     public function logout(Request $request)
