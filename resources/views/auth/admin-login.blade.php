@@ -303,9 +303,6 @@
             </form>
 
             <div class="switch-link">
-                Belum punya akun? <a href="{{ route('admin.register') }}">Daftar admin</a>
-            </div>
-            <div class="switch-link">
                 Siswa login? <a href="{{ route('student.login') }}">Klik di sini</a>
             </div>
         </div>
