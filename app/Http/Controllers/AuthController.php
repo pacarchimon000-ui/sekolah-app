@@ -19,11 +19,6 @@ class AuthController extends Controller
         return view('auth.student-register');
     }
 
-    public function showAdminRegister()
-    {
-        return view('auth.admin-register');
-    }
-
     public function registerStudent(Request $request)
     {
         $validated = $request->validate([
@@ -41,25 +36,6 @@ class AuthController extends Controller
         ]);
 
         return redirect()->route('student.login')->with('success', 'Akun siswa berhasil dibuat. Silakan login.');
-    }
-
-    public function registerAdmin(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'phone_number' => ['required', 'string', 'max:20', 'unique:users,phone_number'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        User::create([
-            'name' => $validated['name'],
-            'email' => $this->buildPlaceholderEmail($validated['phone_number']),
-            'phone_number' => $validated['phone_number'],
-            'role' => 'admin',
-            'password' => $validated['password'],
-        ]);
-
-        return redirect()->route('admin.login')->with('success', 'Akun admin berhasil dibuat. Silakan login.');
     }
 
     public function showStudentManagement(Request $request)

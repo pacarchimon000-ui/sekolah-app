@@ -47,9 +47,6 @@ Route::middleware('auth')->group(function () {
 Route::get('/register/siswa', [AuthController::class, 'showStudentRegister'])->name('student.register');
 Route::post('/register/siswa', [AuthController::class, 'registerStudent'])->name('student.register.submit');
 
-Route::get('/register/admin', [AuthController::class, 'showAdminRegister'])->name('admin.register');
-Route::post('/register/admin', [AuthController::class, 'registerAdmin'])->name('admin.register.submit');
-
 Route::get('/login/siswa', [AuthController::class, 'showStudentLogin'])->name('student.login');
 Route::post('/login/siswa', [AuthController::class, 'loginStudent'])
     ->middleware('throttle:5,15')

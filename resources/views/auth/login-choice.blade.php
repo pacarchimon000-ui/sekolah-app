@@ -194,7 +194,6 @@
             </div>
             <p>Masuk dengan nomor handphone dan password admin untuk mengelola laporan, memantau status, dan menghubungi pelapor melalui WhatsApp.</p>
             <a href="{{ route('admin.login') }}" class="primary">Masuk sebagai admin</a>
-            <a href="{{ route('admin.register') }}">Daftar admin</a>
         </div>
     </div>
 </div>
